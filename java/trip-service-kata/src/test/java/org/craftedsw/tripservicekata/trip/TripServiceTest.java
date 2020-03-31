@@ -2,6 +2,7 @@ package org.craftedsw.tripservicekata.trip;
 
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
+import org.craftedsw.tripservicekata.user.UserSession;
 import org.craftedsw.tripservicekata.user.UserSessionMock;
 import org.craftedsw.tripservicekata.user.UserSessionMockThrowException;
 import org.junit.jupiter.api.Test;
@@ -15,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TripServiceTest {
 
-    private TripService tripService = new TripService(new UserSessionMock());
-    private User user = new User();
-
     @Test
     void getTripsByUsers_success() {
+        User user = new User();
+        TripService tripService = new TripService(new UserSessionMock(user));
+
         // When
         List<Trip> result = tripService.getTripsByUser(user);
 
@@ -30,6 +31,7 @@ public class TripServiceTest {
     @Test
     void getTripsByUsers_shouldThrowException_WhenUserIsNotLoggedIn() {
         // Given
+        User user = new User();
         TripService tripService = new TripService(new UserSessionMockThrowException());
 
         // When
@@ -37,6 +39,23 @@ public class TripServiceTest {
             tripService.getTripsByUser(user);
         });
 
+    }
+
+    @Test
+    void getTripsByUsers_sucess_when_friend_has_trip_list() {
+        // Given
+        User loggedUser = new User();
+        User friendUser = new User();
+        UserSessionMock userSessionMock = new UserSessionMock(loggedUser);
+
+        friendUser.addFriend(loggedUser);
+        TripService tripService = new TripService(userSessionMock);
+
+        // When
+        List<Trip> result = tripService.getTripsByUser(loggedUser);
+
+        // Then
+        assertTrue(result.isEmpty());
     }
 
 }
