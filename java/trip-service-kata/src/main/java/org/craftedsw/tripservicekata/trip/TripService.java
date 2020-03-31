@@ -25,8 +25,8 @@ public class TripService {
 		List<Trip> tripList = new ArrayList<Trip>();
 		User loggedUser = getLoggedUser();
 		if (loggedUser != null) {
-			if (areFriends(user, loggedUser)) {
-				tripList = tripDAO.findTripsByUser(user);
+			if (user.isFriend(loggedUser)) {
+				tripList = getFriendsTrips(user);
 			}
 			return tripList;
 		} else {
@@ -34,15 +34,12 @@ public class TripService {
 		}
 	}
 
-	private boolean areFriends(User user, User loggedUser) {
-		boolean isFriend = false;
-		for (User friend : user.getFriends()) {
-			if (friend.equals(loggedUser)) {
-				isFriend = true;
-				break;
-			}
-		}
-		return isFriend;
+	private List<Trip> getFriendsTrips(User user) {
+		List<Trip> tripList;
+		tripList = tripDAO.findTripsByUser(user);
+		return tripList;
 	}
+
+
 
 }
