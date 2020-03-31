@@ -11,15 +11,16 @@ import javax.lang.model.type.ArrayType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TripServiceTest {
+
+    private TripDAO tripDAO = new TripDAOMock();
 
     @Test
     void getTripsByUsers_success() {
         User user = new User();
-        TripService tripService = new TripService(new UserSessionMock(user));
+        TripService tripService = new TripService(new UserSessionMock(user), tripDAO);
 
         // When
         List<Trip> result = tripService.getTripsByUser(user);
@@ -32,7 +33,7 @@ public class TripServiceTest {
     void getTripsByUsers_shouldThrowException_WhenUserIsNotLoggedIn() {
         // Given
         User user = new User();
-        TripService tripService = new TripService(new UserSessionMockThrowException());
+        TripService tripService = new TripService(new UserSessionMockThrowException(), tripDAO);
 
         // When
         Exception exception = assertThrows(UserNotLoggedInException.class, () -> {
@@ -49,13 +50,13 @@ public class TripServiceTest {
         UserSessionMock userSessionMock = new UserSessionMock(loggedUser);
 
         friendUser.addFriend(loggedUser);
-        TripService tripService = new TripService(userSessionMock);
+        TripService tripService = new TripService(userSessionMock, tripDAO);
 
         // When
-        List<Trip> result = tripService.getTripsByUser(loggedUser);
+        List<Trip> result = tripService.getTripsByUser(friendUser);
 
         // Then
-        assertTrue(result.isEmpty());
+        assertNull(result);
     }
 
 }
