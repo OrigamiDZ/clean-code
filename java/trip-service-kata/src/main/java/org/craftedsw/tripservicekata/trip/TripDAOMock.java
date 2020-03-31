@@ -7,6 +7,6 @@ import java.util.List;
 public class TripDAOMock implements TripDAO {
     @Override
     public List<Trip> findTripsByUser(User user) {
-        return null;
+        return user.trips();
     }
 }
